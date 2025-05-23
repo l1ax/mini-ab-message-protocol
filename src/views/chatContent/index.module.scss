@@ -1,7 +1,7 @@
 .chatContainer {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   background-color: #f5f5f5;
 }
 
@@ -26,33 +26,33 @@
 }
 
 .chatBody {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.m  essageList {
-    flex: 1;
-    padding: 50px 24px;
-    overflow-y: auto;
-    scroll-behavior: smooth;
+.messageList {
+  flex: 1;
+  padding: 16px 24px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
 
-    &::-webkit-scrollbar {
-        width: 6px;
-    }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
 
-    &::-webkit-scrollbar-track {
-        background: #f0f0f0;
-        border-radius: 3px;
-    }
+  &::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 3px;
+  }
 
-    &::-webkit-scrollbar-thumb {
-        background: #d9d9d9;
-        border-radius: 3px;
+  &::-webkit-scrollbar-thumb {
+    background: #d9d9d9;
+    border-radius: 3px;
 
     &:hover {
-        background: #bfbfbf;
+      background: #bfbfbf;
     }
   }
 }
@@ -208,11 +208,6 @@
   .emptyText {
     margin: 0;
   }
-}
-
-.messageList {
-  padding: 50px 24px;
-  overflow-y: auto;
 }
 
 // 响应式设计

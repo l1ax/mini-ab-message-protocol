@@ -17,7 +17,6 @@ const ChatView: React.FC = observer(() => {
 
     return (
         <div className={cls.chatView}>
-            <h1>Chat View</h1>
             <ChatContent store={conversationStore} />
         </div>
     )
