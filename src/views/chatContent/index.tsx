@@ -86,67 +86,8 @@ export const ChatContent: React.FC<IProps> = observer((props) => {
                                     </div>
                                 </div>
                             </div>
-                            // <div
-                            //     key={qa.id}
-                            //     className={`${styles.messageItem} ${
-                            //         qa.type === 'user'
-                            //             ? styles.userMessage
-                            //             : styles.assistantMessage
-                            //     }`}
-                            // >
-                            //     <div
-                            //         className={`${styles.avatar} ${
-                            //             message.type === 'user'
-                            //                 ? styles.userAvatar
-                            //                 : styles.assistantAvatar
-                            //         }`}
-                            //     >
-                            //         {message.type === 'user' ? (
-                            //             <UserOutlined />
-                            //         ) : (
-                            //             <RobotOutlined />
-                            //         )}
-                            //     </div>
-                            //     <div className={styles.messageContent}>
-                            //         {message.content}
-                            //     </div>
-                            // </div>
                         ))
                     )}
-                    {/* {messages.length === 0 ? (
-                        <div className={styles.emptyState}>
-                            <MessageOutlined className={styles.emptyIcon} />
-                            <p className={styles.emptyText}>开始您的对话吧...</p>
-                        </div>
-                    ) : (
-                        messages.map((message) => (
-                            <div
-                                key={message.id}
-                                className={`${styles.messageItem} ${
-                                    message.type === 'user'
-                                        ? styles.userMessage
-                                        : styles.assistantMessage
-                                }`}
-                            >
-                                <div
-                                    className={`${styles.avatar} ${
-                                        message.type === 'user'
-                                            ? styles.userAvatar
-                                            : styles.assistantAvatar
-                                    }`}
-                                >
-                                    {message.type === 'user' ? (
-                                        <UserOutlined />
-                                    ) : (
-                                        <RobotOutlined />
-                                    )}
-                                </div>
-                                <div className={styles.messageContent}>
-                                    {message.content}
-                                </div>
-                            </div>
-                        ))
-                    )} */}
                 </div>
             </div>
 

@@ -75,10 +75,6 @@ export class Conversation {
         } catch (error: unknown) {
             console.error('sendQuery error', error)
         }
-
-        // newQA.answer = response.answer;
-        // newQA.messageId = response.message_id;
-        // newQA.date = response.date;
     }
 
     processMessage(message: SSEConversationTypes.IConversationSSEMessage) {
