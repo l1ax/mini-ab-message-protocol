@@ -10,9 +10,10 @@ const ChatView: React.FC = observer(() => {
     const conversationStore: ConversationStore = useMemo(() => new ConversationStore(), []);
 
     useEffect(() => {
-        flowResult(conversationStore.onCreateConversation(ConversationStore.DEFAULT_APP_ID)).then((res) => {
-            console.log(res);
-        });
+        flowResult(conversationStore.onCreateConversation(ConversationStore.DEFAULT_APP_ID))
+            .catch((err) => {
+                console.error(err);
+            });
     }, [conversationStore]);
 
     return (

@@ -4,35 +4,35 @@
 
 import { flow, makeObservable, observable } from 'mobx';
 import {abKyInstance} from '../api';
+import {Conversation} from './Conversation';
 
 export class ConversationStore {
-    static DEFAULT_APP_ID: string = 'f4a72528-dded-4a31-a17e-616bee8b75c1';
+    static DEFAULT_APP_ID: string = '32bad2ae-9e7f-4d37-a4ad-02cc3c1f1424';
 
-    conversationId: string = '';
+    conversation: Conversation = new Conversation();
 
     constructor() {
         makeObservable(this, {
-            conversationId: observable,
+            conversation: observable.ref,
             onCreateConversation: flow.bound
         })
     }
 
     * onCreateConversation(app_id: string) {
-        // 防止重复调用：如果已经有conversationId，直接返回
-        if (this.conversationId) {
-            console.log('Conversation already exists:', this.conversationId);
+        if (window.localStorage.getItem('conversationId')) {
+            this.conversation.conversationId = window.localStorage.getItem('conversationId') || '';
             return;
         }
 
-        console.log('Creating new conversation...');
         const response: ConversationStore.ICreateConversationResponse = yield abKyInstance.post('api/app/conversation', {
             json: {
                 app_id,
             },
         }).json()
 
-        this.conversationId = response.conversation_id;
-        console.log('Conversation created:', this.conversationId);
+        this.conversation.conversationId = response.conversation_id;
+
+        window.localStorage.setItem('conversationId', response.conversation_id);
     }
 }
 
