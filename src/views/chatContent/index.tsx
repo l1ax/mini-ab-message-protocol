@@ -3,7 +3,9 @@ import React, { useState, useRef, useEffect } from 'react'
 import { UserOutlined, RobotOutlined, MessageOutlined } from '@ant-design/icons'
 import { ConversationStore } from '../../store/ConversationStore';
 import styles from './index.module.scss'
-import {flowResult} from 'mobx';
+import {action, flowResult} from 'mobx';
+import {Button} from 'antd';
+import {EventRenderer} from '../../components/eventRenderer';
 
 interface IProps {
     store: ConversationStore;
@@ -51,6 +53,15 @@ export const ChatContent: React.FC<IProps> = observer((props) => {
             <div className={styles.chatHeader}>
                 <div className={styles.conversationId}>
                     对话ID: {store.conversation.conversationId}
+                    <Button
+                        type="primary"
+                        onClick={action(() => {
+                            window.localStorage.removeItem('conversationId');
+                            store.onCreateConversation(ConversationStore.DEFAULT_APP_ID)
+                        })}
+                    >
+                        创建新的会话
+                    </Button>
                 </div>
             </div>
 
@@ -82,7 +93,14 @@ export const ChatContent: React.FC<IProps> = observer((props) => {
                                         <RobotOutlined />
                                     </div>
                                     <div className={styles.messageContent}>
-                                        {qa.answer}
+                                        {/* {qa.answer} */}
+                                        {
+                                            qa.events.map((event) => (
+                                                <div key={event.event_id}>
+                                                    <EventRenderer event={event} />
+                                                </div>
+                                            ))
+                                        }
                                     </div>
                                 </div>
                             </div>

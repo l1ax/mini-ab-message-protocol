@@ -4,7 +4,7 @@
 
 import { flow, makeObservable, observable } from 'mobx';
 import {abKyInstance} from '../api';
-import {Conversation} from './Conversation';
+import {Conversation} from '../model/Conversation';
 
 export class ConversationStore {
     static DEFAULT_APP_ID: string = '32bad2ae-9e7f-4d37-a4ad-02cc3c1f1424';

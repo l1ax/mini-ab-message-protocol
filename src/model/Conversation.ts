@@ -4,7 +4,7 @@
 
 import { action, flow, makeObservable, observable } from 'mobx';
 import {AssistantQA} from './AssistantQA';
-import {ConversationStore} from './ConversationStore';
+import {ConversationStore} from '../store/ConversationStore';
 
 import ky from 'ky';
 import {createSSEHook} from '../api/createSSEHook';
