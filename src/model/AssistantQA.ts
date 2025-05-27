@@ -5,6 +5,7 @@
 import { action, makeObservable, observable } from 'mobx';
 import {SSEConversationTypes} from '../types/sseConversation';
 import {createEventFromRawData, ExecutionEvent} from './ExecutionEvent';
+import {eventContentAggregateService, EventContentAggregateService} from '../service';
 
 export class AssistantQA {
     id: string = '';
@@ -57,26 +58,13 @@ export class AssistantQA {
             throw new Error(`Event ${eventRawData.event_id} not found`);
         }
 
-        switch (event.event_type) {
-            case 'function_call': {
-                event.outputs = eventRawData.outputs as ExecutionEvent.IFunctionCallEventOutput;
-                break;
-            }
-            case 'chat_reasoning': {
-                event.outputs.text += (eventRawData.outputs as ExecutionEvent.IChatReasoningEventOutput).text;
-                break;
-            }
-            case 'thought': {
-                event.outputs.text += (eventRawData.outputs as ExecutionEvent.IThoughtEventOutput).text;
-                break;
-            }
-            case 'ChatAgent': {
-                event.outputs.text += (eventRawData.outputs as ExecutionEvent.IChatAgentEventOutput).text;
-                break;
-            }
-            default: {
-                break;
-            }
+        const contentAggregator: EventContentAggregateService.IContentAggregator<any> | undefined
+            = eventContentAggregateService.getContentAggregator(event.event_type);
+
+        if (!contentAggregator) {
+            throw new Error(`Content aggregator for event type ${event.event_type} not found`);
         }
+
+        event.outputs = contentAggregator(event.outputs, eventRawData.outputs);
     }
 }
