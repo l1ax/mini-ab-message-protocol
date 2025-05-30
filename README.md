@@ -1,50 +1,19 @@
-# React + TypeScript + Vite
+# ab对话demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+分成part-one, part-two, part-three三个分支
 
-Currently, two official plugins are available:
+- part-one: 基于ab assistant api渲染简单对话和event(thought, function_call, 组件调用等)
+- part-two: 基于新的消息结构重构part-one
+- part-three: 基于langgraph实现agent，仿造ab返回消息内容，标记模型原始输出
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
+## part-one
+---
+需求： 将function_call event和组件调用event放到一个div里渲染
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+目前是遍历qa.events，顺序渲染，想要实现这个需求需要组织event的结构
+- 第一种方法，function_call event上维护一个calledEvents数组，保存被call的event，渲染function_call event的时候遍历calledEvents渲染
+- 第二种方法
+见eventTree.drawio
+如图, event tree会是一个深度为2的多叉树，在这个event tree当中，需要聚合渲染的（比如function_call 和 tool_call event要一起渲染）要作为树的一个parent节点
+被聚合的作为他们的子节点（通常这些节点也是树的叶子节点）

@@ -1,5 +1,5 @@
 import {observer} from 'mobx-react-lite'
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { UserOutlined, RobotOutlined, MessageOutlined } from '@ant-design/icons'
 import { ConversationStore } from '../../store/ConversationStore';
 import styles from './index.module.scss'
@@ -18,12 +18,21 @@ export const ChatContent: React.FC<IProps> = observer((props) => {
     const messageListRef = useRef<HTMLDivElement>(null)
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
-    // 自动滚动到底部
-    useEffect(() => {
+    // 滚动到底部的函数
+    const scrollToBottom = useCallback(() => {
         if (messageListRef.current) {
-            messageListRef.current.scrollTop = messageListRef.current.scrollHeight
+            messageListRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end'
+            })
         }
-    }, [store.conversation.qaList.length])
+    }, [])
+
+    // 监听 qaList 变化
+    useEffect(() => {
+        scrollToBottom()
+    }, [store.conversation.qaList.length, store.conversation.activeQA?.latestEvent?.outputs, scrollToBottom])
+
 
     // 处理输入框高度自适应
     useEffect(() => {
@@ -67,45 +76,47 @@ export const ChatContent: React.FC<IProps> = observer((props) => {
 
             {/* 聊天内容区域 */}
             <div className={styles.chatBody}>
-                <div className={styles.messageList} ref={messageListRef}>
-                    {store.conversation.qaList.length === 0 ? (
-                        <div className={styles.emptyState}>
-                            <MessageOutlined className={styles.emptyIcon} />
-                            <p className={styles.emptyText}>开始您的对话吧...</p>
-                        </div>
-                    ) : (
-                        store.conversation.qaList.map((qa) => (
-                            <div className={styles.qaContainer} key={qa.id}>
-                                <div
-                                    className={`${styles.messageItem} ${styles.userMessage}`}
-                                >
-                                    <div className={styles.avatar}>
-                                        <UserOutlined />
-                                    </div>
-                                    <div className={styles.messageContent}>
-                                        {qa.query}
-                                    </div>
-                                </div>
-                                <div
-                                    className={`${styles.messageItem} ${styles.assistantMessage}`}
-                                >
-                                    <div className={styles.avatar}>
-                                        <RobotOutlined />
-                                    </div>
-                                    <div className={styles.messageContent}>
-                                        {/* {qa.answer} */}
-                                        {
-                                            qa.events.map((event) => (
-                                                <div key={event.event_id}>
-                                                    <EventRenderer event={event} />
-                                                </div>
-                                            ))
-                                        }
-                                    </div>
-                                </div>
+                <div className={styles.messageList}>
+                    <div ref={messageListRef}>
+                        {store.conversation.qaList.length === 0 ? (
+                            <div className={styles.emptyState}>
+                                <MessageOutlined className={styles.emptyIcon} />
+                                <p className={styles.emptyText}>开始您的对话吧...</p>
                             </div>
-                        ))
-                    )}
+                        ) : (
+                            store.conversation.qaList.map((qa) => (
+                                <div className={styles.qaContainer} key={qa.id}>
+                                    <div
+                                        className={`${styles.messageItem} ${styles.userMessage}`}
+                                    >
+                                        <div className={styles.avatar}>
+                                            <UserOutlined />
+                                        </div>
+                                        <div className={styles.messageContent}>
+                                            {qa.query}
+                                        </div>
+                                    </div>
+                                    <div
+                                        className={`${styles.messageItem} ${styles.assistantMessage}`}
+                                    >
+                                        <div className={styles.avatar}>
+                                            <RobotOutlined />
+                                        </div>
+                                        <div className={styles.messageContent}>
+                                            {/* {qa.answer} */}
+                                            {
+                                                qa.events.map((event) => (
+                                                    <div key={event.event_id}>
+                                                        <EventRenderer event={event} />
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
             </div>
 

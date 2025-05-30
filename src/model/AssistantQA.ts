@@ -2,12 +2,14 @@
  * @file 问答对类，代表一次问答
  */
 
-import { action, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import {SSEConversationTypes} from '../types/sseConversation';
 import {createEventFromRawData, ExecutionEvent} from './ExecutionEvent';
 import {eventContentAggregateService, EventContentAggregateService} from '../service';
 
 export class AssistantQA {
+    static TOP_LEVEL_EVENT_TYPES: string[] = ['function_call'];
+
     id: string = '';
 
     /** 问题 */
@@ -25,7 +27,8 @@ export class AssistantQA {
             answer: observable,
             events: observable.shallow,
             processMessage: action.bound,
-            aggregateEvent: action.bound
+            aggregateEvent: action.bound,
+            latestEvent: computed
         })
     }
 
@@ -41,10 +44,16 @@ export class AssistantQA {
             return;
         }
 
+        let targetEvent: ExecutionEvent<any> | undefined = this.events.find(event => event.event_id === eventRawData.event_id);
         // 如果事件列表中没有该事件，则添加
-        if (!this.events.find(event => event.event_id === eventRawData.event_id)) {
+        if (!targetEvent) {
             const newEvent: ExecutionEvent<any> = createEventFromRawData(eventRawData);
+            const latestEvent: ExecutionEvent<any> | undefined = this.events[this.events.length - 1];
+            if (latestEvent) {
+                latestEvent.nextEvent = newEvent;
+            }
             this.events.push(newEvent);
+            targetEvent = newEvent;
         }
         else {
             this.aggregateEvent(eventRawData);
@@ -62,9 +71,13 @@ export class AssistantQA {
             = eventContentAggregateService.getContentAggregator(event.event_type);
 
         if (!contentAggregator) {
-            throw new Error(`Content aggregator for event type ${event.event_type} not found`);
+            return;
         }
 
         event.outputs = contentAggregator(event.outputs, eventRawData.outputs);
+    }
+
+    get latestEvent(): ExecutionEvent<any> | undefined {
+        return this.events[this.events.length - 1];
     }
 }

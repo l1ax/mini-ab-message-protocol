@@ -22,6 +22,7 @@ export namespace SSEConversationTypes {
         event_type: 'function_call' | 'chat_reasoning' | 'thought' | 'ChatAgent';
         event_status: 'running' | 'error' | 'done' | 'preparing' | 'interrupt';
         content_type: 'text' | 'status' | 'function_call' | 'chat_reasoning';
+        visible_scope: 'all' | 'user' | 'llm' | '';
         outputs: TOutputs;
     }
 

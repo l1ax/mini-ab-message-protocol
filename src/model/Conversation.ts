@@ -55,7 +55,7 @@ export class Conversation {
             onData: action((message: string) => {
                 const parsedMessage: SSEConversationTypes.IConversationSSEMessage
                     = JSON.parse(message) as SSEConversationTypes.IConversationSSEMessage;
-                
+
                 this.processMessage(parsedMessage);
             }),
             onCompleted: action(() => {
@@ -82,7 +82,11 @@ export class Conversation {
             throw new Error('activeQA is null');
         }
 
-        if (!message.content) {
+        if (!message.content || message.content.length === 0) {
+            return;
+        }
+
+        if (message.content[0].visible_scope === 'llm') {
             return;
         }
 

@@ -2,10 +2,12 @@
  * @file 执行事件单元
  */
 
-import {makeObservable, observable} from 'mobx';
+import {computed, makeObservable, observable} from 'mobx';
 import {SSEConversationTypes} from '../types/sseConversation';
 
 export class ExecutionEvent<TOutput> {
+    static readonly TOP_LEVEL_EVENT_TYPES = ['function_call', 'thought', 'chat_reasoning'];
+
     event_id: string = '';
 
     /** 事件类型 */
@@ -22,6 +24,8 @@ export class ExecutionEvent<TOutput> {
 
     outputs: TOutput = {} as TOutput;
 
+    nextEvent: ExecutionEvent<any> | null = null;
+
     constructor(event_type: SSEConversationTypes.IExecutionEvent['event_type'] = 'ChatAgent') {
         this.event_type = event_type;
 
@@ -32,7 +36,26 @@ export class ExecutionEvent<TOutput> {
             event_message: observable,
             content_type: observable,
             outputs: observable,
+            nextEvent: observable.ref,
+            calledEvent: computed,
         })
+    }
+
+    /** 获取被调用的event，比如function_call 后的 组件执行event */
+    get calledEvent(): Array<ExecutionEvent<any>> {
+        if (!ExecutionEvent.TOP_LEVEL_EVENT_TYPES.includes(this.event_type)) {
+            return [];
+        }
+
+        const result: Array<ExecutionEvent<any>> = [];
+        let nextEvent: ExecutionEvent<any> | null = this.nextEvent;
+
+        while(nextEvent && !ExecutionEvent.TOP_LEVEL_EVENT_TYPES.includes(nextEvent.event_type)) {
+            result.push(nextEvent);
+            nextEvent = nextEvent.nextEvent;
+        }
+
+        return result;
     }
 }
 
@@ -99,6 +122,11 @@ export namespace ExecutionEvent {
 
     export interface IThoughtEventOutput {
         /** 普通文本。问答模型思维链内容 */
+        text: string;
+    }
+
+    export interface IToolEventOutput {
+        /** 组件调用产出的消息 */
         text: string;
     }
 }
