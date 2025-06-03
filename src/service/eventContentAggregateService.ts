@@ -20,7 +20,7 @@ class EventContentAggregateService {
     public getContentAggregator(
         eventType: string
     ): EventContentAggregateService.IContentAggregator | undefined {
-        return this.contentAggregators[eventType];
+        return this.contentAggregators[eventType] ?? chatAgentContentAggregator;
     }
 }
 

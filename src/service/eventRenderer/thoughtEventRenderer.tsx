@@ -16,7 +16,7 @@ interface IProps {
 export const thoughtEventRenderer: React.FC<IProps> = observer(props => {
     const ThoughtContentRenderer: React.FC<any> | undefined = eventContentRenderService.getContentRenderer('thought');
     return (
-        <div className={styles.eventRenderer}>
+        <div className={styles.eventRenderer} data-no-border>
             <h2>agent思考</h2>
             {ThoughtContentRenderer && <ThoughtContentRenderer outputs={props.event.outputs} />}
         </div>

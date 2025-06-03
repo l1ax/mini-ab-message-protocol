@@ -5,7 +5,7 @@ import { ConversationStore } from '../../store/ConversationStore';
 import styles from './index.module.scss'
 import {action, flowResult} from 'mobx';
 import {Button} from 'antd';
-import {EventRenderer} from '../../components/eventRenderer';
+import {TreeViewRenderer} from '../../components/treeviewRenderer';
 
 interface IProps {
     store: ConversationStore;
@@ -103,14 +103,7 @@ export const ChatContent: React.FC<IProps> = observer((props) => {
                                             <RobotOutlined />
                                         </div>
                                         <div className={styles.messageContent}>
-                                            {/* {qa.answer} */}
-                                            {
-                                                qa.events.map((event) => (
-                                                    <div key={event.event_id}>
-                                                        <EventRenderer event={event} />
-                                                    </div>
-                                                ))
-                                            }
+                                            <TreeViewRenderer root={qa.eventTree.root} />
                                         </div>
                                     </div>
                                 </div>

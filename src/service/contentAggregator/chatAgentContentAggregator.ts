@@ -8,6 +8,6 @@ export const chatAgentContentAggregator: EventContentAggregateService.IContentAg
     incomingContent: ExecutionEvent.IChatAgentEventOutput
 ) => {
     return {
-        text: prevContent.text + incomingContent.text,
+        text: (prevContent.text ?? '') + (incomingContent.text ?? ''),
     };
 };

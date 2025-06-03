@@ -19,7 +19,7 @@ export const functionCallEventRenderer: React.FC<IProps> = observer(props => {
     const FunctionCallContentRenderer = eventContentRenderService.getContentRenderer('function_call');
     
     return (
-        <div className={styles.eventRenderer}>
+        <div className={styles.eventRenderer} data-no-border>
             <div className={styles.title}>
                 <div className={styles.titleText}>
                     调用{props.event.outputs.text.component_name}
@@ -31,7 +31,7 @@ export const functionCallEventRenderer: React.FC<IProps> = observer(props => {
             {showFunctionCallArgs && (
                 FunctionCallContentRenderer && <FunctionCallContentRenderer outputs={props.event.outputs} />
             )}
-            
+{/*             
             {props.event.calledEvent.length > 0 && (
                 <div className={styles.calledEvent}>
                     {props.event.calledEvent.map(event => {
@@ -48,7 +48,7 @@ export const functionCallEventRenderer: React.FC<IProps> = observer(props => {
                         )
                     })}
                 </div>
-            )}
+            )} */}
         </div>
     );
 });

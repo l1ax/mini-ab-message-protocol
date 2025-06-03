@@ -2,6 +2,7 @@
  * @file 事件渲染服务
  */
 
+import {baseEventRenderer} from './eventRenderer/baseEventRenderer';
 import {functionCallEventRenderer} from './eventRenderer/functionCallEventRenderer';
 import {thoughtEventRenderer} from './eventRenderer/thoughtEventRenderer';
 
@@ -13,7 +14,7 @@ class EventRenderService {
     }
 
     public getEventRenderer(eventType: string): EventRenderService.IEventRenderer | undefined {
-        return this.eventRenderers[eventType];
+        return this.eventRenderers[eventType] ?? baseEventRenderer;
     }
 }
 

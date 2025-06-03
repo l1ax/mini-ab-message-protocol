@@ -6,6 +6,7 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import {SSEConversationTypes} from '../types/sseConversation';
 import {createEventFromRawData, ExecutionEvent} from './ExecutionEvent';
 import {eventContentAggregateService, EventContentAggregateService} from '../service';
+import {EventTree} from './EventTree';
 
 export class AssistantQA {
     static TOP_LEVEL_EVENT_TYPES: string[] = ['function_call'];
@@ -20,12 +21,15 @@ export class AssistantQA {
 
     events: ExecutionEvent<any>[] = [];
 
+    eventTree: EventTree = new EventTree();
+
     constructor() {
         makeObservable(this, {
             id: observable,
             query: observable,
             answer: observable,
             events: observable.shallow,
+            eventTree: observable.ref,
             processMessage: action.bound,
             aggregateEvent: action.bound,
             latestEvent: computed
@@ -58,6 +62,9 @@ export class AssistantQA {
         else {
             this.aggregateEvent(eventRawData);
         }
+
+        // 完成聚合后，构建/更新 eventTree
+        this.eventTree.update(this.latestEvent!);
     }
 
     /** 聚合事件 */
@@ -70,11 +77,11 @@ export class AssistantQA {
         const contentAggregator: EventContentAggregateService.IContentAggregator<any> | undefined
             = eventContentAggregateService.getContentAggregator(event.event_type);
 
-        if (!contentAggregator) {
+        if (eventRawData.visible_scope === 'llm') {
             return;
         }
 
-        event.outputs = contentAggregator(event.outputs, eventRawData.outputs);
+        event.outputs = contentAggregator!(event.outputs, eventRawData.outputs);
     }
 
     get latestEvent(): ExecutionEvent<any> | undefined {

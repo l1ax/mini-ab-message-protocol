@@ -38,6 +38,7 @@ export class ExecutionEvent<TOutput> {
             outputs: observable,
             nextEvent: observable.ref,
             calledEvent: computed,
+            isTopLevelEvent: computed
         })
     }
 
@@ -56,6 +57,10 @@ export class ExecutionEvent<TOutput> {
         }
 
         return result;
+    }
+
+    get isTopLevelEvent(): boolean {
+        return ExecutionEvent.TOP_LEVEL_EVENT_TYPES.includes(this.event_type);
     }
 }
 

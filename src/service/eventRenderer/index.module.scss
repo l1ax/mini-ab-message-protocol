@@ -5,6 +5,10 @@
     margin-bottom: 10px;
     
     text-align: left;
+
+    &[data-no-border] {
+        border: none;
+    }
 }
 
 .title {
