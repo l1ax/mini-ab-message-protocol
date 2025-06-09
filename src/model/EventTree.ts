@@ -27,8 +27,6 @@ export class EventTree {
             return;
         }
 
-        console.log('update event', event.event_id);
-
         const node: EventTreeNode = new EventTreeNode(event);
         this.idToEventTreeNodeMap.set(event.event_id, node);
         

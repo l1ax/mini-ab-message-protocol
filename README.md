@@ -2,8 +2,8 @@
 
 分成part-one, part-two, part-three三个分支
 
-- part-one: 基于ab assistant api渲染简单对话和event(thought, function_call, 组件调用等)
-- part-two: 基于新的消息结构重构part-one
+- part-one: 基于ab assistant api渲染简单对话和event(thought, function_call, 组件调用等) ✅
+- part-two: 基于新的消息架构重构part-one
 - part-three: 基于langgraph实现agent，仿造ab返回消息内容，标记模型原始输出
 
 
@@ -17,3 +17,6 @@
 见eventTree.drawio
 如图, event tree会是一个深度为2的多叉树，在这个event tree当中，需要聚合渲染的（比如function_call 和 tool_call event要一起渲染）要作为树的一个parent节点
 被聚合的作为他们的子节点（通常这些节点也是树的叶子节点）
+
+✅
+---

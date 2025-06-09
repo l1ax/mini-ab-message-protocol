@@ -90,6 +90,7 @@ export function createEventFromRawData<TOutput>(rawData: SSEConversationTypes.IE
         }
         default: {
             event = new ExecutionEvent<any>();
+            event.outputs = rawData.outputs as any;
             break;
         }
     }
