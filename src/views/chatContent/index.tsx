@@ -1,37 +1,40 @@
 import {observer} from 'mobx-react-lite'
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { UserOutlined, RobotOutlined, MessageOutlined } from '@ant-design/icons'
-import { ConversationStore } from '../../store/ConversationStore';
 import styles from './index.module.scss'
 import {action, flowResult} from 'mobx';
 import {Button} from 'antd';
 import {TreeViewRenderer} from '../../components/treeviewRenderer';
+import {Conversation} from '../../refactor/Conversation';
+import {Session} from '../../refactor/Session';
+import {SessionComponent} from '../sessionComponent';
 
 interface IProps {
-    store: ConversationStore;
+    store: Conversation;
 }
 
 export const ChatContent: React.FC<IProps> = observer((props) => {
-    const {store} = props;
+    const activeSession: Session | null = props.store.activeSession;
+
     const [inputValue, setInputValue] = useState('')
 
     const messageListRef = useRef<HTMLDivElement>(null)
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
-    // 滚动到底部的函数
-    const scrollToBottom = useCallback(() => {
-        if (messageListRef.current) {
-            messageListRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'end'
-            })
-        }
-    }, [])
+    // // 滚动到底部的函数
+    // const scrollToBottom = useCallback(() => {
+    //     if (messageListRef.current) {
+    //         messageListRef.current.scrollIntoView({
+    //             behavior: 'smooth',
+    //             block: 'end'
+    //         })
+    //     }
+    // }, [])
 
     // 监听 qaList 变化
-    useEffect(() => {
-        scrollToBottom()
-    }, [store.conversation.qaList.length, store.conversation.activeQA?.latestEvent?.outputs, scrollToBottom])
+    // useEffect(() => {
+    //     scrollToBottom()
+    // }, [store.conversation.qaList.length, store.conversation.activeQA?.latestEvent?.outputs, scrollToBottom])
 
 
     // 处理输入框高度自适应
@@ -42,8 +45,12 @@ export const ChatContent: React.FC<IProps> = observer((props) => {
         }
     }, [inputValue])
 
-    const handleSendMessage = () => {
-        flowResult(store.conversation.sendQuery(inputValue))
+    const handleSendMessage = async () => {
+        if (!activeSession) {
+            return;
+        }
+
+        flowResult(activeSession.sendQuery(inputValue))
             .finally(() => {
                 setInputValue('');
             });
@@ -56,18 +63,23 @@ export const ChatContent: React.FC<IProps> = observer((props) => {
         }
     }
 
+    const handleCreateNewSession = () => {
+        window.localStorage.removeItem('conversationId');
+        flowResult(props.store.createSession())
+            .catch((err) => {
+                console.error(err);
+            });
+    }
+
     return (
         <div className={styles.chatContainer}>
             {/* 聊天头部 */}
             <div className={styles.chatHeader}>
                 <div className={styles.conversationId}>
-                    对话ID: {store.conversation.conversationId}
+                    对话ID: {activeSession?.conversationId}
                     <Button
                         type="primary"
-                        onClick={action(() => {
-                            window.localStorage.removeItem('conversationId');
-                            store.onCreateConversation(ConversationStore.DEFAULT_APP_ID)
-                        })}
+                        onClick={handleCreateNewSession}
                     >
                         创建新的会话
                     </Button>
@@ -78,36 +90,13 @@ export const ChatContent: React.FC<IProps> = observer((props) => {
             <div className={styles.chatBody}>
                 <div className={styles.messageList}>
                     <div ref={messageListRef}>
-                        {store.conversation.qaList.length === 0 ? (
+                        {(!activeSession || activeSession.elements.length === 0) ? (
                             <div className={styles.emptyState}>
                                 <MessageOutlined className={styles.emptyIcon} />
                                 <p className={styles.emptyText}>开始您的对话吧...</p>
                             </div>
                         ) : (
-                            store.conversation.qaList.map((qa) => (
-                                <div className={styles.qaContainer} key={qa.id}>
-                                    <div
-                                        className={`${styles.messageItem} ${styles.userMessage}`}
-                                    >
-                                        <div className={styles.avatar}>
-                                            <UserOutlined />
-                                        </div>
-                                        <div className={styles.messageContent}>
-                                            {qa.query}
-                                        </div>
-                                    </div>
-                                    <div
-                                        className={`${styles.messageItem} ${styles.assistantMessage}`}
-                                    >
-                                        <div className={styles.avatar}>
-                                            <RobotOutlined />
-                                        </div>
-                                        <div className={styles.messageContent}>
-                                            <TreeViewRenderer root={qa.eventTree.root} />
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
+                            <SessionComponent session={activeSession!} />
                         )}
                     </div>
                 </div>
