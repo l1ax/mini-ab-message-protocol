@@ -1,0 +1,114 @@
+.sessionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0;
+  width: 100%;
+}
+
+.messageWrapper {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  animation: fadeInUp 0.3s ease-out;
+  
+  &.userMessage {
+    justify-content: flex-start;
+    
+    .messageContent {
+      margin-right: auto;
+      margin-left: 0;
+    }
+  }
+  
+  &.assistantMessage {
+    justify-content: flex-end;
+    
+    .messageContent {
+      margin-left: auto;
+      margin-right: 0;
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.messageContent {
+  max-width: 70%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  
+  @media (max-width: 768px) {
+    max-width: 80%;
+  }
+  
+  @media (max-width: 480px) {
+    max-width: 85%;
+  }
+}
+
+.roleLabel {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  opacity: 0.8;
+  
+  &.userLabel {
+    color: #1890ff;
+    text-align: left;
+  }
+  
+  &.assistantLabel {
+    color: #52c41a;
+    text-align: right;
+  }
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 500;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.userAvatar {
+    background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
+    color: white;
+    margin-right: 12px;
+  }
+  
+  &.assistantAvatar {
+    background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+    color: white;
+    margin-left: 12px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+}
