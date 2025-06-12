@@ -11,6 +11,7 @@ import {Executor} from './Executor';
 import {ExecutionResponse} from './ExecutionResponse';
 import {AgentResponse} from './AgentResponse';
 import {TextQuery} from './TextQuery';
+import eventPluginPresets from './plugins/eventPluginPresets';
 
 export class Session {
     /**
@@ -25,7 +26,9 @@ export class Session {
     /** sessions内容，包含query，response和其他内容 */
     elements: Session.IElement[] = [];
 
-    private readonly executor: Executor = new Executor();
+    private readonly executor: Executor = new Executor({
+        eventPlugins: eventPluginPresets
+    });
 
     constructor() {
         makeObservable(this, {

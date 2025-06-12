@@ -19,7 +19,7 @@ export namespace SSEConversationTypes {
     /** 复杂对话消息的消息体 */
     export interface IExecutionEvent<TOutputs = unknown> {
         event_id: string;
-        event_type: 'function_call' | 'chat_reasoning' | 'thought' | 'ChatAgent';
+        event_type: 'function_call' | 'chat_reasoning' | 'thought' | 'ChatAgent' | 'base';
         event_status: 'running' | 'error' | 'done' | 'preparing' | 'interrupt';
         content_type: 'text' | 'status' | 'function_call' | 'chat_reasoning';
         visible_scope: 'all' | 'user' | 'llm' | '';

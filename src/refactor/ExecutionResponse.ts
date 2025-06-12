@@ -4,9 +4,10 @@
 
 import {action, computed, makeObservable, observable} from 'mobx';
 import {SSEConversationTypes} from '../types/sseConversation';
-import {createEventFromRawData, ExecutionEvent} from '../model/ExecutionEvent';
+import {ExecutionEvent} from '../model/ExecutionEvent';
 import {eventContentAggregateService, EventContentAggregateService} from '../service';
 import {EventTree} from '../model/EventTree';
+import {BaseEvent} from '../service/events';
 
 export class ExecutionResponse {
 
@@ -18,7 +19,9 @@ export class ExecutionResponse {
 
     eventTree: EventTree = new EventTree();
 
-    constructor() {
+    eventPlugins: Map<string, typeof ExecutionEvent<any>> = new Map();
+
+    constructor(options: ExecutionResponse.IOptions) {
         makeObservable(this, {
             isCompleted: observable,
             conversationId: observable,
@@ -30,6 +33,8 @@ export class ExecutionResponse {
             processMessage: action.bound,
             aggregateEvent: action.bound
         })
+
+        this.eventPlugins = options.eventPlugins;
     }
 
     receiveEventMessage(message: string) {
@@ -59,7 +64,14 @@ export class ExecutionResponse {
         let targetEvent: ExecutionEvent<any> | undefined = this.events.find(event => event.event_id === eventRawData.event_id);
         // 如果事件列表中没有该事件，则添加
         if (!targetEvent) {
-            const newEvent: ExecutionEvent<any> = createEventFromRawData(eventRawData);
+            const Event: typeof ExecutionEvent<any>= this.eventPlugins.get(eventRawData.event_type) ?? BaseEvent;
+            const newEvent: ExecutionEvent<any> = new Event();
+            newEvent.event_id = eventRawData.event_id;
+            newEvent.event_type = eventRawData.event_type;
+            newEvent.event_status = eventRawData.event_status;
+            newEvent.content_type = eventRawData.content_type;
+            newEvent.outputs = eventRawData.outputs;
+            
             const latestEvent: ExecutionEvent<any> | undefined = this.events[this.events.length - 1];
             if (latestEvent) {
                 latestEvent.nextEvent = newEvent;
@@ -98,5 +110,11 @@ export class ExecutionResponse {
 
     get latestEvent(): ExecutionEvent<any> | undefined {
         return this.events[this.events.length - 1];
+    }
+}
+
+export namespace ExecutionResponse {
+    export interface IOptions {
+        eventPlugins: Map<string, typeof ExecutionEvent<any>>
     }
 }

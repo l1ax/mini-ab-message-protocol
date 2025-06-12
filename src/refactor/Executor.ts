@@ -2,22 +2,32 @@
  * 执行器
  */
 
-import {makeObservable} from 'mobx';
+import {action, makeObservable, observable} from 'mobx';
 import {ExecutionResponse} from './ExecutionResponse';
 import {createSSEHook} from '../api/createSSEHook';
 import {flow} from 'mobx';
 import {abAuthHook} from '../api/abAuthHook';
 import ky from 'ky';
+import {ExecutionEvent} from '../model/ExecutionEvent';
 
 export class Executor {
-    constructor() {
+
+    eventPlugins: Map<string, typeof ExecutionEvent<any>> = new Map();
+
+    constructor(private readonly options: Executor.IOptions) {
         makeObservable(this, {
-            invoke: flow.bound
+            invoke: flow.bound,
+            eventPlugins: observable,
+            genResponseOptions: action.bound
+        })
+
+        options.eventPlugins.forEach((eventPlugin: typeof ExecutionEvent<any>) => {
+            this.eventPlugins.set(eventPlugin.name, eventPlugin);
         })
     }
 
     * invoke(params: any) {
-        const response: ExecutionResponse = new ExecutionResponse();
+        const response: ExecutionResponse = new ExecutionResponse(this.genResponseOptions());
 
         const sseHook = createSSEHook({
             onData: (message: string): void => {
@@ -37,5 +47,18 @@ export class Executor {
         })
 
         return response;
+    }
+
+    genResponseOptions() {
+        return {
+            eventPlugins: this.eventPlugins
+        }
+    }
+}
+
+export namespace Executor {
+    export interface IOptions {
+        /** event 插件 */
+        eventPlugins: Array<typeof ExecutionEvent<any>>
     }
 }
