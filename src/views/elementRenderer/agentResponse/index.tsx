@@ -6,6 +6,7 @@ import {Session} from '../../../refactor/Session';
 import {observer} from 'mobx-react-lite';
 import {AgentResponse} from '../../../refactor/AgentResponse';
 import {TreeViewRenderer} from '../../../components/treeviewRenderer';
+import {TreeView} from '../../../refactor/views/TreeView';
 
 import styles from './index.module.scss';
 
@@ -19,7 +20,7 @@ export const AgentResponseRenderer: React.FC<IProps> = observer((props) => {
     console.log('element', element);
     return (
         <div className={styles.agentResponse}>
-            <TreeViewRenderer root={element.executionResponse.eventTree.root} />
+            <TreeViewRenderer root={(element.executionResponse.view as TreeView).eventTree.root} />
         </div>
     )
 })

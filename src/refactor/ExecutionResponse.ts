@@ -6,8 +6,8 @@ import {action, computed, makeObservable, observable} from 'mobx';
 import {SSEConversationTypes} from '../types/sseConversation';
 import {ExecutionEvent} from '../model/ExecutionEvent';
 import {eventContentAggregateService, EventContentAggregateService} from '../service';
-import {EventTree} from '../model/EventTree';
 import {BaseEvent} from '../service/events';
+import {BaseView} from './views/BaseView';
 
 export class ExecutionResponse {
 
@@ -17,16 +17,17 @@ export class ExecutionResponse {
 
     events: ExecutionEvent<any>[] = [];
 
-    eventTree: EventTree = new EventTree();
 
     eventPlugins: Map<string, typeof ExecutionEvent<any>> = new Map();
+
+    view: BaseView;
 
     constructor(options: ExecutionResponse.IOptions) {
         makeObservable(this, {
             isCompleted: observable,
             conversationId: observable,
             events: observable.ref,
-            eventTree: observable.ref,
+            view: observable.ref,
             latestEvent: computed,
             complete: action.bound,
             receiveEventMessage: action.bound,
@@ -35,6 +36,7 @@ export class ExecutionResponse {
         })
 
         this.eventPlugins = options.eventPlugins;
+        this.view = new options.viewPlugin();
     }
 
     receiveEventMessage(message: string) {
@@ -84,7 +86,8 @@ export class ExecutionResponse {
         }
 
         // 完成聚合后，构建/更新 eventTree
-        this.eventTree.update(this.latestEvent!);
+        // this.eventTree.update(this.latestEvent!);
+        this.view.receiveNewEvent(this.latestEvent!);
     }
 
      /** 聚合事件 */
@@ -116,5 +119,7 @@ export class ExecutionResponse {
 export namespace ExecutionResponse {
     export interface IOptions {
         eventPlugins: Map<string, typeof ExecutionEvent<any>>
+
+        viewPlugin: typeof BaseView
     }
 }

@@ -12,6 +12,7 @@ import {ExecutionResponse} from './ExecutionResponse';
 import {AgentResponse} from './AgentResponse';
 import {TextQuery} from './TextQuery';
 import eventPluginPresets from './plugins/eventPluginPresets';
+import {TreeView} from './views/TreeView';
 
 export class Session {
     /**
@@ -27,7 +28,8 @@ export class Session {
     elements: Session.IElement[] = [];
 
     private readonly executor: Executor = new Executor({
-        eventPlugins: eventPluginPresets
+        eventPlugins: eventPluginPresets,
+        viewPlugin: TreeView
     });
 
     constructor() {
